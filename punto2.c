@@ -21,7 +21,9 @@ Lista crearListaVacia();
 Lista crearNodo(int, int);
 void insertarNodo(Lista *, int);
 void mostrarTareas(Lista);
-
+void mostrarTarea(Lista);
+void confirmar(Lista *, Lista *);
+Lista insertarListasConfirmadas(Lista *, Lista *);
 
 int main(){
 
@@ -49,6 +51,14 @@ int main(){
     printf("\n\n--------MOSTRAR TAREAS--------");
     mostrarTareas(tareas);
 
+    printf("\n\n\n--------CONFIRMACION DE TAREAS REALIZADAS--------");
+    confirmar(&tareas, &tareasRealizadas);
+
+    printf("\n\n------TAREAS REALIZADAS------");
+    mostrarTareas(tareasRealizadas);
+
+    printf("\n\n------TAREAS PENDIENTES------");
+    mostrarTareas(tareas);
 
 
     /* printf("\n\n\n--------Buscar tarea por palabra:--------");
@@ -78,24 +88,11 @@ int main(){
     }
 
 
-
-    // esta parte del trabajo la había realizado antes de las funciones de buscar pero me di cuenta que me quedaba sin memoria y me daba un segmentation fault
-
-    tareasRealizadas = (Tarea **)malloc(sizeof(Tarea *) * cantTareas);
-
-    for (int i = 0; i < cantTareas; i++){
-        tareasRealizadas[i] = NULL;
-    }
-
-
-    printf("\n\n\n--------CONFIRMACION DE TAREAS REALIZADAS--------");
-    confirmar(tareas, tareasRealizadas, cantTareas);
-
-    mostrarConfirmadas(tareas, tareasRealizadas, cantTareas);
-
-
     liberarMemoria(tareas, cantTareas);
     liberarMemoria(tareasRealizadas, cantTareas); */
+
+    free(tareas);
+    free(tareasRealizadas);
 
     return 0;
 }
@@ -112,15 +109,16 @@ Lista crearNodo(int cantTareas, int i){
 
     printf("\n----Tarea [%d]----", i+1);
 
-    Lista tarea = (Lista)malloc(sizeof(Lista));
+    Lista tarea = (Lista)malloc(sizeof(struct Nodo));
 
 
     printf("\nIngrese la descripcion de la tarea [%d]: ", i + 1);
-    gets(Buffer);
     fflush(stdin);
+    gets(Buffer);
 
-    tarea->t.descripcion = (char *)malloc(strlen(Buffer) + 1);
+    tarea->t.descripcion = (char *)malloc(strlen(Buffer + 1) * sizeof(char));
     strcpy(tarea->t.descripcion, Buffer);
+
 
     printf("\nIngrese la duracion de la tarea, entre 10 y 100: ");
     scanf(" %d", &(tarea->t.duracion));
@@ -166,4 +164,53 @@ void mostrarTareas(Lista tareas){
 
         puntero = puntero->siguiente;
     }
+}
+
+void mostrarTarea(Lista tareas){
+
+    printf("\n----Tarea [%d]----", tareas->t.tareaID);
+    printf("\nDescripcion: ");
+    puts(tareas->t.descripcion);
+    printf("Duracion: %d", tareas->t.duracion);
+    printf("\n");
+}
+
+void confirmar(Lista *tareas, Lista *tareasRealizadas){
+
+    Lista noRealizadas, puntero;
+    int confirmada;
+
+    noRealizadas = crearListaVacia();
+
+
+    while (*tareas != NULL){
+
+        mostrarTarea(*tareas);
+
+        printf("\n\n¿Realizó la tarea?\nOPCIONES: \n[1]: Si    |    [0]: No   : ");
+        scanf(" %d", &confirmada);
+        fflush(stdin);
+
+        while (confirmada < 0 || confirmada > 1){
+            printf("\nError de formato.\nOPCIONES: \n[1]: Si\n[0]: No   : ");
+            scanf("%d", &confirmada);
+            fflush(stdin);
+        }
+
+        puntero = (*tareas)->siguiente;
+
+        if (confirmada == 1){
+
+            (*tareas)->siguiente = *tareasRealizadas;
+            *tareasRealizadas = *tareas; 
+        } else {
+
+            (*tareas)->siguiente = noRealizadas;
+            noRealizadas = *tareas; 
+        }
+
+        *tareas = puntero;
+    }
+
+    *tareas = noRealizadas;
 }
