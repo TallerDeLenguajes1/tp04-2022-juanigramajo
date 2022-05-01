@@ -17,8 +17,9 @@ void confirmar(Tarea **, Tarea **, int);
 void mostrarConfirmadas(Tarea **, Tarea **, int);
 
 Tarea *buscarTarea(Tarea **, int, int);
-
 Tarea *buscarTareaPalabraClave(Tarea **, int, char *);
+
+void liberarMemoria(Tarea**, int);
 
 
 int main(){
@@ -86,6 +87,10 @@ int main(){
     confirmar(tareas, tareasRealizadas, cantTareas);
 
     mostrarConfirmadas(tareas, tareasRealizadas, cantTareas);
+
+
+    liberarMemoria(tareas, cantTareas);
+    liberarMemoria(tareasRealizadas, cantTareas);
 
     return 0;
 }
@@ -210,4 +215,19 @@ Tarea *buscarTarea(Tarea **tareas, int cantTareas, int num){
     }
     
     return 0;
+}
+
+void liberarMemoria(Tarea** tareas, int cantTareas){
+
+    for (int i = 0; i < cantTareas; i++){
+
+        if (tareas[i]){
+
+            free(tareas[i]->descripcion);   
+        }
+
+        free(tareas[i]);
+    }
+
+    free(tareas);
 }
