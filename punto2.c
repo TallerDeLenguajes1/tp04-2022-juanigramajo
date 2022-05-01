@@ -161,6 +161,7 @@ void mostrarTareas(Lista tareas){
         printf("\nDescripcion: ");
         puts(puntero->t.descripcion);
         printf("Duracion: %d", puntero->t.duracion);
+        printf("\n");
 
         puntero = puntero->siguiente;
     }
