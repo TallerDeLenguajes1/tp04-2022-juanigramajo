@@ -112,7 +112,7 @@ Lista crearNodo(int cantTareas, int i){
 
     printf("\n----Tarea [%d]----", i+1);
 
-    Lista tarea = (Lista)malloc(sizeof(Lista));
+    Lista tarea = (Lista)malloc(sizeof(struct Nodo));
 
 
     printf("\nIngrese la descripcion de la tarea [%d]: ", i + 1);
