@@ -16,6 +16,8 @@ void mostrar(Tarea);
 void confirmar(Tarea **, Tarea **, int);
 void mostrarConfirmadas(Tarea **, Tarea **, int);
 
+Tarea *buscarTarea(Tarea **, int, int);
+
 
 int main(){
 
@@ -39,6 +41,22 @@ int main(){
     cargar(tareas, cantTareas);
 
 
+    printf("\n\n\n--------Buscar tarea por ID:--------");
+
+    // acá podría implementar solicitar por pantalla el ID a buscar.
+    
+    if (buscarTarea(tareas, cantTareas, 2)){
+
+        mostrar(*buscarTarea(tareas, cantTareas, 2));
+
+    } else {
+        printf("\nNo hay una tarea con ese ID");
+    }
+
+
+
+    // esta parte del trabajo la había realizado antes de las funciones de buscar pero me di cuenta que me quedaba sin memoria y me daba un segmentation fault
+
     tareasRealizadas = (Tarea **)malloc(sizeof(Tarea *) * cantTareas);
 
     for (int i = 0; i < cantTareas; i++){
@@ -49,10 +67,7 @@ int main(){
     printf("\n\n\n--------CONFIRMACION DE TAREAS REALIZADAS--------");
     confirmar(tareas, tareasRealizadas, cantTareas);
 
-
     mostrarConfirmadas(tareas, tareasRealizadas, cantTareas);
-
-
 
     return 0;
 }
@@ -109,7 +124,7 @@ void confirmar(Tarea **tareas, Tarea **tareasRealizadas, int cantTareas){
 
         mostrar(*tareas[i]);
 
-        printf("\n\nRealizó la tarea [%d]?\nOPCIONES: \n[1]: Si\n[0]: No   : ", tareas[i]->tareaID);
+        printf("\n\nRealizó la tarea [%d]?\nOPCIONES: \n[1]: Si    |    [0]: No   : ", tareas[i]->tareaID);
         scanf("%d", &confirmada);
         fflush(stdin);
 
@@ -153,3 +168,15 @@ void mostrarConfirmadas(Tarea **tareasPendientes, Tarea **tareasRealizadas, int 
     }
 }
 
+Tarea *buscarTarea(Tarea **tareas, int cantTareas, int num){
+
+    for (int i = 0; i < cantTareas; i++){
+
+        if (tareas[i]->tareaID == num){
+            return tareas[i];
+        }
+
+    }
+    
+    return 0;
+}
