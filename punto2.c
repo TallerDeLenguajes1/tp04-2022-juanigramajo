@@ -25,10 +25,17 @@ void mostrarTarea(Lista);
 void confirmar(Lista *, Lista *);
 Lista insertarListasConfirmadas(Lista *, Lista *);
 
+Lista buscarTarea(Lista *, int);
+Lista buscarTareaPalabraClave(Lista *, char *);
+
+void liberarMemoria(Lista); 
+
+
 int main(){
 
     int cantTareas;
     Lista tareas, tareasRealizadas;
+    char *clave;
     
     tareas = crearListaVacia();
     tareasRealizadas = crearListaVacia();
@@ -61,38 +68,55 @@ int main(){
     mostrarTareas(tareas);
 
 
-    /* printf("\n\n\n--------Buscar tarea por palabra:--------");
-
-    if (buscarTareaPalabraClave(tareas, cantTareas, "taller")){
-
-        mostrar(*buscarTareaPalabraClave(tareas, cantTareas, "taller"));
-
-    } else {
-
-        printf("\nNo hay una tarea con esa palabra");
-    }
-    
-
-
     printf("\n\n\n--------Buscar tarea por ID:--------");
-
     // acá podría implementar solicitar por pantalla el ID a buscar.
-    
-    if (buscarTarea(tareas, cantTareas, 2)){
-
-        mostrar(*buscarTarea(tareas, cantTareas, 2));
+    if (buscarTarea(&tareas, 6)){
+        
+        mostrarTarea(buscarTarea(&tareas, 6));
+        printf("\n");
 
     } else {
 
-        printf("\nNo hay una tarea con ese ID");
-    }
+        if (buscarTarea(&tareasRealizadas, 6)){
+            
+            mostrarTarea(buscarTarea(&tareasRealizadas, 6));
+            printf("\n");
+
+        } else {
+
+            printf("\nNo hay una tarea con ese ID");
+            printf("\n");
+
+        }      
+    }   
+
+    
+    printf("\n\n--------Buscar tarea por palabra:--------");
+    clave = "taller";
+
+    if (buscarTareaPalabraClave(&tareas, clave)){
+
+        mostrarTarea(buscarTareaPalabraClave(&tareas, clave));
+        printf("\n");
+
+    } else {
+
+        if (buscarTareaPalabraClave(&tareasRealizadas, clave)){
+            
+            mostrarTarea(buscarTareaPalabraClave(&tareasRealizadas, clave));
+            printf("\n");
+
+        } else {
+
+            printf("\nNo hay una tarea con esa palabra");
+            printf("\n");
+
+        }      
+    } 
 
 
-    liberarMemoria(tareas, cantTareas);
-    liberarMemoria(tareasRealizadas, cantTareas); */
-
-    free(tareas);
-    free(tareasRealizadas);
+    liberarMemoria(tareas);
+    liberarMemoria(tareasRealizadas);
 
     return 0;
 }
@@ -156,7 +180,7 @@ void mostrarTareas(Lista tareas){
 
     while (puntero != NULL){
 
-        printf("\n----Tarea----");
+        printf("\n----Tarea [%d]----", puntero->t.tareaID);
         printf("\nID: [%d]", puntero->t.tareaID);
         printf("\nDescripcion: ");
         puts(puntero->t.descripcion);
@@ -170,6 +194,7 @@ void mostrarTareas(Lista tareas){
 void mostrarTarea(Lista tareas){
 
     printf("\n----Tarea [%d]----", tareas->t.tareaID);
+    printf("\nID: [%d]", tareas->t.tareaID);
     printf("\nDescripcion: ");
     puts(tareas->t.descripcion);
     printf("Duracion: %d", tareas->t.duracion);
@@ -214,4 +239,51 @@ void confirmar(Lista *tareas, Lista *tareasRealizadas){
     }
 
     *tareas = noRealizadas;
+}
+
+Lista buscarTarea(Lista *tareas, int num) {
+
+    Lista puntero;
+    puntero = *tareas;
+
+    while (puntero != NULL){
+
+        if (puntero->t.tareaID == num){
+            return puntero;
+        }
+        
+        puntero = puntero->siguiente;
+    }
+
+    return 0;
+}
+
+Lista buscarTareaPalabraClave (Lista *tareas, char *palabra){
+
+    Lista puntero;
+    puntero = *tareas;
+
+    while (puntero != NULL){
+
+        if (strstr(puntero->t.descripcion, palabra)){
+            return puntero;
+        }
+        
+        puntero = puntero->siguiente;
+    }
+
+    return 0;
+}
+
+void liberarMemoria(Lista tareas){
+
+    Lista puntero;
+
+    while(tareas){
+
+        puntero = tareas;
+        tareas = tareas->siguiente;
+        free(puntero->t.descripcion);
+        free(puntero);   
+    }  
 }
