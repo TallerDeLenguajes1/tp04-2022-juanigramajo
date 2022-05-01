@@ -10,22 +10,27 @@ struct Tarea {
     int duracion; // entre 10 – 100
 } typedef Tarea;
 
+struct Nodo{
+    Tarea t;
+    struct Nodo *siguiente;
+};
+typedef struct Nodo *Lista;
 
-void cargar(Tarea **, int);
-void mostrar(Tarea);
-void confirmar(Tarea **, Tarea **, int);
-void mostrarConfirmadas(Tarea **, Tarea **, int);
 
-Tarea *buscarTarea(Tarea **, int, int);
-Tarea *buscarTareaPalabraClave(Tarea **, int, char *);
-
-void liberarMemoria(Tarea**, int);
+Lista crearListaVacia();
+Lista crearNodo(int, int);
+void insertarNodo(Lista *, int);
+void mostrarTareas(Lista);
 
 
 int main(){
 
     int cantTareas;
-    Tarea **tareas, **tareasRealizadas;
+    Lista tareas, tareasRealizadas;
+    
+    tareas = crearListaVacia();
+    tareasRealizadas = crearListaVacia();
+
 
     printf("\nIngrese la cantidad de tareas que realizara el empleado: ");
     scanf(" %d", &cantTareas);
@@ -36,17 +41,17 @@ int main(){
         scanf(" %d", &cantTareas);
         fflush(stdin);
     }
-    
-    tareas = (Tarea **)malloc(sizeof(Tarea *) * cantTareas);
-
 
 
     printf("\n\n--------CARGA DE TAREAS--------");
-    cargar(tareas, cantTareas);
+    insertarNodo(&tareas, cantTareas);
+
+    printf("\n\n--------MOSTRAR TAREAS--------");
+    mostrarTareas(tareas);
 
 
 
-    printf("\n\n\n--------Buscar tarea por palabra:--------");
+    /* printf("\n\n\n--------Buscar tarea por palabra:--------");
 
     if (buscarTareaPalabraClave(tareas, cantTareas, "taller")){
 
@@ -90,144 +95,75 @@ int main(){
 
 
     liberarMemoria(tareas, cantTareas);
-    liberarMemoria(tareasRealizadas, cantTareas);
+    liberarMemoria(tareasRealizadas, cantTareas); */
 
     return 0;
 }
 
 
-void cargar(Tarea **tareas, int cantTareas){
+Lista crearListaVacia(){
+
+    return NULL;
+}
+
+Lista crearNodo(int cantTareas, int i){
 
     char *Buffer = (char *)malloc(100 * sizeof(char));
 
-    for (int i = 0; i < cantTareas; i++){
+    printf("\n----Tarea [%d]----", i+1);
 
-        printf("\n----Tarea [%d]----", i+1);
+    Lista tarea = (Lista)malloc(sizeof(Lista));
 
-        tareas[i] = (Tarea *)malloc(sizeof(Tarea) * 1);
 
-        tareas[i]->tareaID = i + 1;
+    printf("\nIngrese la descripcion de la tarea [%d]: ", i + 1);
+    gets(Buffer);
+    fflush(stdin);
 
-        printf("\nIngrese la descripcion de la tarea [%d]: ", i + 1);
-        gets(Buffer);
+    tarea->t.descripcion = (char *)malloc(strlen(Buffer) + 1);
+    strcpy(tarea->t.descripcion, Buffer);
+
+    printf("\nIngrese la duracion de la tarea, entre 10 y 100: ");
+    scanf(" %d", &(tarea->t.duracion));
+    fflush(stdin);
+
+    while (tarea->t.duracion < 10 || tarea->t.duracion > 100){
+        printf("\nError de formato. Entre 10 y 100: ");
+        scanf(" %d", &(tarea->t.duracion));
         fflush(stdin);
-
-        tareas[i]->descripcion = (char *)malloc(strlen(Buffer) + 1);
-        strcpy(tareas[i]->descripcion, Buffer);
-
-        printf("\nIngrese la duracion de la tarea, entre 10 y 100: ");
-        scanf(" %d", &(tareas[i]->duracion));
-        fflush(stdin);
-
-        while (tareas[i]->duracion < 10 || tareas[i]->duracion > 100){
-            printf("\nError de formato. Entre 10 y 100: ");
-            scanf(" %d", &(tareas[i]->duracion));
-            fflush(stdin);
-        }
     }
+
+    tarea->t.tareaID = i + 1;
+    tarea->siguiente = NULL;
 
     free(Buffer);
+    return tarea;
 }
 
-void mostrar(Tarea tareas){
-
-     printf("\n----Tarea----");
-    printf("\nID: [%d]", tareas.tareaID);
-    printf("\nDescripcion: ");
-    puts(tareas.descripcion);
-    printf("Duracion: %d", tareas.duracion);
-}
-
-void confirmar(Tarea **tareas, Tarea **tareasRealizadas, int cantTareas){
-
-    int confirmada;
-    int numArreglo = 0;
+void insertarNodo(Lista *tareas, int cantTareas){
 
     for (int i = 0; i < cantTareas; i++){
 
-        mostrar(*tareas[i]);
+        Lista nuevo;
+        nuevo = crearNodo(cantTareas, i);
 
-        printf("\n\nRealizó la tarea [%d]?\nOPCIONES: \n[1]: Si    |    [0]: No   : ", tareas[i]->tareaID);
-        scanf("%d", &confirmada);
-        fflush(stdin);
-
-        while (confirmada < 0 || confirmada > 1){
-            printf("\nError de formato.\nOPCIONES: \n[1]: Si\n[0]: No   : ");
-            scanf("%d", &confirmada);
-            fflush(stdin);
-        }
-
-        if (confirmada == 1){
-
-            tareasRealizadas[numArreglo] = tareas[i];
-            tareas[i] = NULL;
-            numArreglo++;
-        }
+        nuevo->siguiente = *tareas;
+        *tareas = nuevo;
     }
 }
 
-void mostrarConfirmadas(Tarea **tareasPendientes, Tarea **tareasRealizadas, int cantTareas){
+void mostrarTareas(Lista tareas){
 
-    int j = 0;
+    Lista puntero;
+    puntero = tareas;
 
-    printf("\n\n--------TAREAS NO REALIZADAS--------");
+    while (puntero != NULL){
 
-    for (int i = 0; i < cantTareas; i++){
-        if (tareasPendientes[i] != NULL)
-        {
-            mostrar(*tareasPendientes[i]);
-            printf("\n");
-        }
+        printf("\n----Tarea----");
+        printf("\nID: [%d]", puntero->t.tareaID);
+        printf("\nDescripcion: ");
+        puts(puntero->t.descripcion);
+        printf("Duracion: %d", puntero->t.duracion);
+
+        puntero = puntero->siguiente;
     }
-
-
-    printf("\n\n--------TAREAS REALIZADAS--------");
-
-    while (tareasRealizadas[j] != NULL){
-
-        mostrar(*tareasRealizadas[j]);
-        j++;
-        printf("\n");
-    }
-}
-
-Tarea *buscarTareaPalabraClave(Tarea **tareas, int cantTareas, char *palabra){
-
-    for (int i = 0; i < cantTareas; i++){
-        if (strstr(tareas[i]->descripcion, palabra)){
-
-            return tareas[i];
-        }
-
-    }
-
-    return 0;
-}
-
-Tarea *buscarTarea(Tarea **tareas, int cantTareas, int num){
-
-    for (int i = 0; i < cantTareas; i++){
-
-        if (tareas[i]->tareaID == num){
-            return tareas[i];
-        }
-
-    }
-    
-    return 0;
-}
-
-void liberarMemoria(Tarea** tareas, int cantTareas){
-
-    for (int i = 0; i < cantTareas; i++){
-
-        if (tareas[i]){
-
-            free(tareas[i]->descripcion);   
-        }
-
-        free(tareas[i]);
-    }
-
-    free(tareas);
 }
