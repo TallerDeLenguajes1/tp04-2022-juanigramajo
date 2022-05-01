@@ -17,6 +17,9 @@ void confirmar(Tarea **, Tarea **, int);
 void mostrarConfirmadas(Tarea **, Tarea **, int);
 
 
+Tarea *buscarTareaPalabraClave(Tarea **, int, char *);
+
+
 int main(){
 
     int cantTareas;
@@ -37,6 +40,20 @@ int main(){
 
     printf("\n\n--------CARGA DE TAREAS--------");
     cargar(tareas, cantTareas);
+
+
+    printf("\n\n\n--------Buscar tarea por palabra:--------");
+
+    if (buscarTareaPalabraClave(tareas, cantTareas, "taller")){
+
+        mostrar(*buscarTareaPalabraClave(tareas, cantTareas, "taller"));
+
+    } else {
+
+        printf("\nNo hay una tarea con esa palabra");
+
+    }
+
 
 
     tareasRealizadas = (Tarea **)malloc(sizeof(Tarea *) * cantTareas);
@@ -153,3 +170,16 @@ void mostrarConfirmadas(Tarea **tareasPendientes, Tarea **tareasRealizadas, int 
     }
 }
 
+
+Tarea *buscarTareaPalabraClave(Tarea **tareas, int cantTareas, char *palabra){
+
+    for (int i = 0; i < cantTareas; i++){
+        if (strstr(tareas[i]->descripcion, palabra)){
+
+            return tareas[i];
+        }
+
+    }
+
+    return 0;
+}
